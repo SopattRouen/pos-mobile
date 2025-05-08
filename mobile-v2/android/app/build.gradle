@@ -1,0 +1,87 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader("UTF-8") { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode", "1")
+def flutterVersionName = localProperties.getProperty("flutter.versionName", "1.0")
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    compileSdk = 34  // Replace with a fixed version (e.g., 33 for Android 13)
+
+    ndkVersion "25.1.8937393"
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def appName = "CamCyber POS - V2.0.2"
+            def buildType = variant.buildType.name
+            def versionCode = variant.versionCode
+            def versionName = variant.versionName
+
+            // Create a custom APK name
+            outputFileName = "${appName}-${buildType}-v${versionName}(${versionCode}).apk"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    // kotlinOptions {
+    //     jvmTarget = "1.8"
+    // }
+
+    defaultConfig {
+        applicationId "com.camcyberpos.pos"
+        namespace "com.camcyberpos.pos"
+        minSdkVersion = 21  // Explicitly set the minimum SDK version
+        targetSdkVersion = 34  // Explicitly set the target SDK version
+        versionCode = flutterVersionCode.toInteger()  // Convert from String to Integer
+        versionName = flutterVersionName
+    }
+
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+// dependencies {
+//     implementation 'androidx.core:core-ktx:1.9.0' // Update this if necessary
+// }
+
+flutter {
+    source = "../.."
+}

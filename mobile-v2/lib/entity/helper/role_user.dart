@@ -1,0 +1,4 @@
+enum RoleUsers {
+  admin,
+  cashier,
+}
